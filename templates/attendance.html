@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AttendWise - Attendance</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+
+<body>
+
+<div class="background-elements">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+</div>
+
+
+<div class="dashboard-container">
+
+    <!-- HEADER -->
+    <div class="dashboard-header">
+
+        <div>
+            <h1>✅ Attendance</h1>
+
+            <p>
+                Mark your classes as present or absent.
+            </p>
+        </div>
+
+        <a href="{{ url_for('dashboard') }}"
+           class="logout-btn">
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- NAVIGATION -->
+    <div class="main-nav">
+
+        <a href="{{ url_for('dashboard') }}">
+            🏠 Dashboard
+        </a>
+
+        <a href="{{ url_for('subjects') }}">
+            📚 Subjects
+        </a>
+
+        <a href="{{ url_for('timetable') }}">
+            🗓️ Timetable
+        </a>
+
+        <a href="{{ url_for('attendance') }}">
+            ✅ Attendance
+        </a>
+
+        <a href="{{ url_for('history') }}">
+            📊 History
+        </a>
+
+        <a href="{{ url_for('holidays') }}">
+            🌴 Holidays
+        </a>
+
+    </div>
+
+
+    <!-- DATE NAVIGATION -->
+    <div class="section-card">
+
+        <h2>
+            📅 Select Date
+        </h2>
+
+
+        <div class="date-navigation">
+
+            <!-- PREVIOUS DAY -->
+            <button
+                type="button"
+                class="date-nav-btn"
+                onclick="changeDate(-1)"
+            >
+                ← Previous
+            </button>
+
+
+            <!-- TODAY -->
+            <button
+                type="button"
+                class="today-btn"
+                onclick="goToday()"
+            >
+                Today
+            </button>
+
+
+            <!-- NEXT DAY -->
+            <button
+                type="button"
+                class="date-nav-btn"
+                onclick="changeDate(1)"
+            >
+                Next →
+            </button>
+
+        </div>
+
+
+        <!-- DATE PICKER -->
+        <form
+            method="GET"
+            action="{{ url_for('attendance') }}"
+            class="date-picker"
+        >
+
+            <input
+                type="date"
+                id="attendance-date"
+                name="date"
+                value="{{ selected_date }}"
+                required
+            >
+
+            <button
+                type="submit"
+                class="primary-btn"
+            >
+                View Classes
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- CLASSES -->
+    <div class="section-card">
+
+        <h2>
+            📚 Classes on {{ selected_date }}
+        </h2>
+
+
+        {% if classes %}
+
+            <div class="attendance-list">
+
+                {% for class in classes %}
+
+                    <div class="attendance-item">
+
+                        <!-- CLASS INFORMATION -->
+                        <div>
+
+                            <strong>
+                                {{ class["subject_name"] }}
+                            </strong>
+
+                            <span>
+                                🕐 {{ class["class_time"] }}
+                            </span>
+
+                        </div>
+
+
+                        <!-- CANCELLED -->
+                        {% if class["status"] == "cancelled" %}
+
+                            <span class="status cancelled">
+                                Cancelled
+                            </span>
+
+
+                        {% else %}
+
+                            <!-- ATTENDANCE BUTTONS -->
+                            <div class="attendance-actions">
+
+
+                                <!-- PRESENT -->
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('mark_attendance') }}"
+                                >
+
+                                    <input
+                                        type="hidden"
+                                        name="class_id"
+                                        value="{{ class['id'] }}"
+                                    >
+
+                                    <input
+                                        type="hidden"
+                                        name="status"
+                                        value="present"
+                                    >
+
+                                    <button
+                                        type="submit"
+                                        class="attendance-btn present-btn"
+                                    >
+                                        Present ✓
+                                    </button>
+
+                                </form>
+
+
+                                <!-- ABSENT -->
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('mark_attendance') }}"
+                                >
+
+                                    <input
+                                        type="hidden"
+                                        name="class_id"
+                                        value="{{ class['id'] }}"
+                                    >
+
+                                    <input
+                                        type="hidden"
+                                        name="status"
+                                        value="absent"
+                                    >
+
+                                    <button
+                                        type="submit"
+                                        class="attendance-btn absent-btn"
+                                    >
+                                        Absent
+                                    </button>
+
+                                </form>
+
+
+                                <!-- CANCEL CLASS -->
+                                <form
+                                    method="POST"
+                                    action="{{ url_for(
+                                        'cancel_class',
+                                        class_id=class['id']
+                                    ) }}"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="attendance-btn cancel-btn"
+                                        onclick="return confirm('Cancel this class?')"
+                                    >
+                                        Cancel
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        {% endif %}
+
+
+                        <!-- CURRENT STATUS -->
+                        {% if class["attendance_status"] %}
+
+                            <span class="marked-label">
+
+                                Current:
+                                {{ class["attendance_status"]|capitalize }}
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+            <!-- NO CLASSES -->
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ☕
+                </div>
+
+                <h3>
+                    No classes
+                </h3>
+
+                <p>
+                    There are no scheduled classes for this date.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+</div>
+
+
+<!-- DATE NAVIGATION JAVASCRIPT -->
+<script>
+
+    function getSelectedDate() {
+
+        const dateInput =
+            document.getElementById("attendance-date");
+
+        return new Date(dateInput.value + "T00:00:00");
+    }
+
+
+    function formatDate(date) {
+
+        const year = date.getFullYear();
+
+        const month = String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+        const day = String(
+            date.getDate()
+        ).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    }
+
+
+    function changeDate(days) {
+
+        const currentDate = getSelectedDate();
+
+        currentDate.setDate(
+            currentDate.getDate() + days
+        );
+
+        const newDate =
+            formatDate(currentDate);
+
+        window.location.href =
+            "{{ url_for('attendance') }}?date="
+            + newDate;
+    }
+
+
+    function goToday() {
+
+        const today = new Date();
+
+        const todayDate =
+            formatDate(today);
+
+        window.location.href =
+            "{{ url_for('attendance') }}?date="
+            + todayDate;
+    }
+
+</script>
+
+
+</body>
+
+</html>

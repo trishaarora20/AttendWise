@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AttendWise - History</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+
+        /* =========================================
+           HISTORY PAGE ADDITIONS
+           ========================================= */
+
+        .history-overview {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .history-overview-card {
+
+            padding: 20px;
+
+            border-radius: 16px;
+
+            background: rgba(20, 20, 34, 0.70);
+
+            border: 1px solid rgba(155, 140, 255, 0.14);
+
+            text-align: center;
+        }
+
+
+        .history-overview-card .overview-icon {
+
+            font-size: 25px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .history-overview-card span {
+
+            display: block;
+
+            color: #9996aa;
+
+            font-size: 13px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .history-overview-card strong {
+
+            color: #ffffff;
+
+            font-size: 25px;
+        }
+
+
+        .history-tools {
+
+            display: flex;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+
+            margin: 20px 0;
+        }
+
+
+        .history-search {
+
+            flex: 1;
+
+            min-width: 180px;
+
+            padding: 12px 14px;
+
+            border-radius: 11px;
+
+            border: 1px solid rgba(155, 140, 255, 0.18);
+
+            background: rgba(15, 15, 28, 0.75);
+
+            color: #ffffff;
+
+            outline: none;
+        }
+
+
+        .history-filter {
+
+            padding: 12px 14px;
+
+            border-radius: 11px;
+
+            border: 1px solid rgba(155, 140, 255, 0.18);
+
+            background: rgba(15, 15, 28, 0.75);
+
+            color: #ffffff;
+
+            outline: none;
+
+        }
+
+
+        .history-filter option {
+
+            background: #181824;
+
+            color: #ffffff;
+
+        }
+
+
+        .history-subject {
+
+            transition: 0.2s ease;
+
+        }
+
+
+        .history-subject:hover {
+
+            transform: translateY(-1px);
+
+        }
+
+
+        .history-record {
+
+            transition: 0.2s ease;
+
+        }
+
+
+        .history-record.hidden {
+
+            display: none;
+
+        }
+
+
+        .history-empty-filter {
+
+            display: none;
+
+            text-align: center;
+
+            padding: 25px;
+
+            color: #9996aa;
+        }
+
+
+        .history-percentage-good {
+
+            color: #9ff0c3 !important;
+
+        }
+
+
+        .history-percentage-warning {
+
+            color: #ffd58a !important;
+
+        }
+
+
+        .history-percentage-danger {
+
+            color: #ff9eaf !important;
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .history-overview {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .history-tools {
+
+                flex-direction: column;
+            }
+
+            .history-search,
+            .history-filter {
+
+                width: 100%;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="background-elements">
+
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+
+</div>
+
+
+<div class="dashboard-container">
+
+
+    <!-- HEADER -->
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <h1>
+                📊 Attendance History
+            </h1>
+
+            <p>
+                Track your attendance subject by subject.
+            </p>
+
+        </div>
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="logout-btn">
+
+            ← Dashboard
+
+        </a>
+
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <div class="main-nav">
+
+        <a href="{{ url_for('dashboard') }}">
+            🏠 Dashboard
+        </a>
+
+        <a href="{{ url_for('subjects') }}">
+            📚 Subjects
+        </a>
+
+        <a href="{{ url_for('timetable') }}">
+            🗓️ Timetable
+        </a>
+
+        <a href="{{ url_for('attendance') }}">
+            ✅ Attendance
+        </a>
+
+        <a href="{{ url_for('history') }}">
+            📊 History
+        </a>
+
+        <a href="{{ url_for('holidays') }}">
+            🌴 Holidays
+        </a>
+
+    </div>
+
+
+    {% set total_present = 0 %}
+    {% set total_absent = 0 %}
+
+    {% for item in summary %}
+
+        {% set total_present =
+            total_present + (item["present_count"] or 0)
+        %}
+
+        {% set total_absent =
+            total_absent + (item["absent_count"] or 0)
+        %}
+
+    {% endfor %}
+
+
+    {% set total_tracked =
+        total_present + total_absent
+    %}
+
+
+    {% if total_tracked > 0 %}
+
+        {% set overall_percentage =
+            (total_present / total_tracked * 100)|round(2)
+        %}
+
+    {% else %}
+
+        {% set overall_percentage = 0 %}
+
+    {% endif %}
+
+
+    <!-- OVERVIEW -->
+
+    <div class="history-overview">
+
+
+        <div class="history-overview-card">
+
+            <div class="overview-icon">
+                📚
+            </div>
+
+            <span>
+                Classes Tracked
+            </span>
+
+            <strong>
+                {{ total_tracked }}
+            </strong>
+
+        </div>
+
+
+        <div class="history-overview-card">
+
+            <div class="overview-icon">
+                ✅
+            </div>
+
+            <span>
+                Present
+            </span>
+
+            <strong>
+                {{ total_present }}
+            </strong>
+
+        </div>
+
+
+        <div class="history-overview-card">
+
+            <div class="overview-icon">
+                📊
+            </div>
+
+            <span>
+                Overall Attendance
+            </span>
+
+            <strong>
+                {{ overall_percentage }}%
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- SUBJECT-WISE ATTENDANCE -->
+
+    <div class="section-card">
+
+        <div class="section-title-row">
+
+            <h2>
+                📚 Subject-wise Attendance
+            </h2>
+
+        </div>
+
+
+        {% if summary %}
+
+            <div class="history-summary">
+
+                {% for item in summary %}
+
+                    {% set present =
+                        item["present_count"] or 0
+                    %}
+
+                    {% set absent =
+                        item["absent_count"] or 0
+                    %}
+
+                    {% set total =
+                        present + absent
+                    %}
+
+
+                    {% if total > 0 %}
+
+                        {% set percentage =
+                            (present / total * 100)|round(2)
+                        %}
+
+                    {% else %}
+
+                        {% set percentage = 0 %}
+
+                    {% endif %}
+
+
+                    <div
+                        class="history-subject"
+                        data-subject="{{ item['name']|lower }}"
+                    >
+
+                        <div>
+
+                            <strong>
+                                {{ item["name"] }}
+                            </strong>
+
+                            <p>
+
+                                {{ present }}
+                                present
+
+                                ·
+
+                                {{ absent }}
+                                absent
+
+                                ·
+
+                                {{ total }}
+                                classes
+
+                            </p>
+
+                        </div>
+
+
+                        {% if percentage >= 75 %}
+
+                            <strong
+                                class="percentage history-percentage-good">
+
+                                {{ percentage }}%
+
+                            </strong>
+
+                        {% elif percentage >= 60 %}
+
+                            <strong
+                                class="percentage history-percentage-warning">
+
+                                {{ percentage }}%
+
+                            </strong>
+
+                        {% else %}
+
+                            <strong
+                                class="percentage history-percentage-danger">
+
+                                {{ percentage }}%
+
+                            </strong>
+
+                        {% endif %}
+
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    📊
+                </div>
+
+                <h3>
+                    No attendance data yet
+                </h3>
+
+                <p>
+                    Mark your classes to see your history.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- RECENT RECORDS -->
+
+    <div class="section-card">
+
+        <div class="section-title-row">
+
+            <h2>
+                🕒 Attendance Records
+            </h2>
+
+        </div>
+
+
+        {% if records %}
+
+
+            <!-- SEARCH + FILTER -->
+
+            <div class="history-tools">
+
+                <input
+                    type="text"
+                    id="historySearch"
+                    class="history-search"
+                    placeholder="🔍 Search subject...">
+
+
+                <select
+                    id="statusFilter"
+                    class="history-filter">
+
+                    <option value="all">
+                        All statuses
+                    </option>
+
+                    <option value="present">
+                        ✅ Present
+                    </option>
+
+                    <option value="absent">
+                        ❌ Absent
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div
+                class="history-records"
+                id="historyRecords">
+
+
+                {% for record in records %}
+
+                    <div
+                        class="history-record"
+                        data-subject="{{ record['subject_name']|lower }}"
+                        data-status="{{ record['status'] }}">
+
+                        <div>
+
+                            <strong>
+                                {{ record["subject_name"] }}
+                            </strong>
+
+                            <span>
+
+                                📅
+                                {{ record["class_date"] }}
+
+                                ·
+
+                                🕐
+                                {{ record["class_time"] }}
+
+                            </span>
+
+                        </div>
+
+
+                        {% if record["status"] == "present" %}
+
+                            <span class="status present">
+                                ✅ Present
+                            </span>
+
+                        {% else %}
+
+                            <span class="status absent">
+                                ❌ Absent
+                            </span>
+
+                        {% endif %}
+
+
+                    </div>
+
+                {% endfor %}
+
+
+            </div>
+
+
+            <div
+                id="historyEmptyFilter"
+                class="history-empty-filter">
+
+                No records match your search.
+
+            </div>
+
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🕒
+                </div>
+
+                <h3>
+                    No attendance records yet
+                </h3>
+
+                <p>
+                    Once you mark attendance, your
+                    records will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <div class="section-card">
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                ✨
+            </div>
+
+            <h3>
+                Keep going!
+            </h3>
+
+            <p>
+                Consistent attendance makes it easier
+                to stay above your target.
+            </p>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- SEARCH / FILTER SCRIPT -->
+
+<script>
+
+    const searchInput =
+        document.getElementById("historySearch");
+
+    const statusFilter =
+        document.getElementById("statusFilter");
+
+    const records =
+        document.querySelectorAll(".history-record");
+
+    const emptyMessage =
+        document.getElementById("historyEmptyFilter");
+
+
+    function filterRecords() {
+
+        if (!searchInput || !statusFilter) {
+            return;
+        }
+
+
+        const searchText =
+            searchInput.value
+                .toLowerCase()
+                .trim();
+
+
+        const selectedStatus =
+            statusFilter.value;
+
+
+        let visibleCount = 0;
+
+
+        records.forEach(function(record) {
+
+            const subject =
+                record.dataset.subject || "";
+
+
+            const status =
+                record.dataset.status || "";
+
+
+            const matchesSearch =
+                subject.includes(searchText);
+
+
+            const matchesStatus =
+                selectedStatus === "all"
+                ||
+                status === selectedStatus;
+
+
+            if (
+                matchesSearch
+                &&
+                matchesStatus
+            ) {
+
+                record.classList.remove("hidden");
+
+                visibleCount++;
+
+            } else {
+
+                record.classList.add("hidden");
+
+            }
+
+        });
+
+
+        if (emptyMessage) {
+
+            if (visibleCount === 0) {
+
+                emptyMessage.style.display = "block";
+
+            } else {
+
+                emptyMessage.style.display = "none";
+
+            }
+
+        }
+
+    }
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            filterRecords
+        );
+
+    }
+
+
+    if (statusFilter) {
+
+        statusFilter.addEventListener(
+            "change",
+            filterRecords
+        );
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

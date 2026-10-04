@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AttendWise - Timetable</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="background-elements">
+
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+
+    <span class="star star-1">✦</span>
+    <span class="star star-2">✧</span>
+    <span class="star star-3">✦</span>
+
+</div>
+
+
+<div class="dashboard-container">
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <h1>🗓️ Timetable</h1>
+
+            <p>
+                Set your weekly class schedule.
+            </p>
+
+        </div>
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="logout-btn"
+        >
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    <div class="main-nav">
+
+        <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
+
+        <a href="{{ url_for('subjects') }}">📚 Subjects</a>
+
+        <a href="{{ url_for('timetable') }}">🗓️ Timetable</a>
+
+        <a href="{{ url_for('attendance') }}">✅ Attendance</a>
+
+        <a href="{{ url_for('history') }}">📊 History</a>
+
+        <a href="{{ url_for('holidays') }}">🌴 Holidays</a>
+
+    </div>
+
+
+    <!-- ADD / EDIT FORM -->
+
+    <div class="section-card">
+
+        {% if edit_rule %}
+
+            <h2>✏️ Edit timetable entry</h2>
+
+            <p class="muted-text timetable-note">
+                Changes apply to the timetable rule. Existing attendance records are preserved.
+            </p>
+
+            <form
+                method="POST"
+                action="{{ url_for('update_timetable', rule_id=edit_rule['id']) }}"
+                class="timetable-form"
+            >
+
+                <div class="form-group">
+
+                    <label>Subject</label>
+
+                    <select
+                        name="subject_id"
+                        required
+                    >
+
+                        {% for subject in subjects %}
+
+                            <option
+                                value="{{ subject['id'] }}"
+                                {% if subject['id'] == edit_rule['subject_id'] %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ subject['name'] }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Day</label>
+
+                    <select
+                        name="day_of_week"
+                        required
+                    >
+
+                        <option value="0"
+                            {% if edit_rule['day_of_week'] == 0 %}selected{% endif %}>
+                            Monday
+                        </option>
+
+                        <option value="1"
+                            {% if edit_rule['day_of_week'] == 1 %}selected{% endif %}>
+                            Tuesday
+                        </option>
+
+                        <option value="2"
+                            {% if edit_rule['day_of_week'] == 2 %}selected{% endif %}>
+                            Wednesday
+                        </option>
+
+                        <option value="3"
+                            {% if edit_rule['day_of_week'] == 3 %}selected{% endif %}>
+                            Thursday
+                        </option>
+
+                        <option value="4"
+                            {% if edit_rule['day_of_week'] == 4 %}selected{% endif %}>
+                            Friday
+                        </option>
+
+                        <option value="5"
+                            {% if edit_rule['day_of_week'] == 5 %}selected{% endif %}>
+                            Saturday
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Time</label>
+
+                    <input
+                        type="time"
+                        name="class_time"
+                        value="{{ edit_rule['class_time'] }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Start date</label>
+
+                    <input
+                        type="date"
+                        name="start_date"
+                        value="{{ edit_rule['start_date'] }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Repeat until</label>
+
+                    <input
+                        type="date"
+                        name="end_date"
+                        value="{{ edit_rule['end_date'] }}"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                >
+                    Save changes
+                </button>
+
+
+                <a
+                    href="{{ url_for('timetable') }}"
+                    class="logout-btn"
+                    style="display:inline-block; text-decoration:none; margin-left:8px;"
+                >
+                    Cancel
+                </a>
+
+            </form>
+
+        {% else %}
+
+            <h2>➕ Add timetable entry</h2>
+
+            <p class="muted-text timetable-note">
+                The entry repeats weekly between the selected dates.
+            </p>
+
+
+            <form
+                method="POST"
+                action="{{ url_for('timetable') }}"
+                class="timetable-form"
+            >
+
+
+                <div class="form-group">
+
+                    <label>Subject</label>
+
+                    <select
+                        name="subject_id"
+                        required
+                    >
+
+                        <option value="">
+                            Select subject
+                        </option>
+
+                        {% for subject in subjects %}
+
+                            <option value="{{ subject['id'] }}">
+                                {{ subject['name'] }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Day</label>
+
+                    <select
+                        name="day_of_week"
+                        required
+                    >
+
+                        <option value="0">Monday</option>
+                        <option value="1">Tuesday</option>
+                        <option value="2">Wednesday</option>
+                        <option value="3">Thursday</option>
+                        <option value="4">Friday</option>
+                        <option value="5">Saturday</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Time</label>
+
+                    <input
+                        type="time"
+                        name="class_time"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Start date</label>
+
+                    <input
+                        type="date"
+                        name="start_date"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Repeat until</label>
+
+                    <input
+                        type="date"
+                        name="end_date"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                >
+                    Add to timetable
+                </button>
+
+
+            </form>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- CURRENT TIMETABLE -->
+
+    <div class="section-card">
+
+        <h2>📖 Current timetable</h2>
+
+
+        {% if timetable %}
+
+            <div class="timetable-list">
+
+                {% for item in timetable %}
+
+                    <div class="timetable-item">
+
+                        <div>
+
+                            <strong>
+                                {{ item["subject_name"] }}
+                            </strong>
+
+                            <span>
+                                {{ ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][item["day_of_week"]] }}
+                                ·
+                                {{ item["class_time"] }}
+                            </span>
+
+                            <small>
+                                {{ item["start_date"] }}
+                                →
+                                {{ item["end_date"] }}
+                            </small>
+
+                        </div>
+
+
+                        <div style="display:flex; gap:8px; align-items:center;">
+
+                            <a
+                                href="{{ url_for('timetable', edit=item['id']) }}"
+                                class="primary-btn"
+                                style="text-decoration:none;"
+                            >
+                                Edit
+                            </a>
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'delete_timetable',
+                                    rule_id=item['id']
+                                ) }}"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                    onclick="return confirm('Delete this timetable rule? Existing attendance will be preserved.')"
+                                >
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🗓️
+                </div>
+
+                <h3>
+                    No timetable yet
+                </h3>
+
+                <p>
+                    Add your weekly classes above.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>

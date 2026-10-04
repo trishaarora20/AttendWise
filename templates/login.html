@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AttendWise - Login</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+
+<body>
+
+    <!-- Background decoration -->
+    <div class="background-elements">
+
+        <span class="orb orb-1"></span>
+        <span class="orb orb-2"></span>
+        <span class="orb orb-3"></span>
+
+        <span class="star star-1">✦</span>
+        <span class="star star-2">✧</span>
+        <span class="star star-3">✦</span>
+        <span class="star star-4">·</span>
+        <span class="star star-5">·</span>
+
+    </div>
+
+
+    <!-- Login card -->
+    <div class="auth-container">
+
+        <div class="auth-card">
+
+            <h1>📚 AttendWise</h1>
+
+            <p class="subtitle">
+                Your college attendance companion
+            </p>
+
+            <h2>Welcome back!</h2>
+
+
+            <!-- Flash messages -->
+            {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                    <div class="flash-message">
+
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <!-- Login form -->
+            <form method="POST" action="{{ url_for('login') }}">
+
+                <!-- Email -->
+                <div class="form-group">
+
+                    <label for="email">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Password -->
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Login button -->
+                <button
+                    type="submit"
+                    class="primary-btn">
+
+                    Login
+
+                </button>
+
+            </form>
+
+
+            <!-- Signup link -->
+            <p class="switch-text">
+
+                Don't have an account?
+
+                <a href="{{ url_for('signup') }}">
+                    Create one
+                </a>
+
+            </p>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

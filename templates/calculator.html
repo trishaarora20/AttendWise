@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AttendWise - Can I Skip?</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+.calculator-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:20px 0}.calculator-box,.calculator-result{padding:18px;border-radius:14px;background:rgba(20,20,34,.7);border:1px solid rgba(155,140,255,.14)}.calculator-number{font-size:28px;font-weight:700;color:#b5a8ff}.calculator-form{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:20px 0}.calculator-form label{display:flex;flex-direction:column;gap:7px}.calculator-form input{padding:12px;border-radius:10px;border:1px solid rgba(155,140,255,.2);background:rgba(15,15,28,.8);color:white}.calculator-result{margin-top:15px}.success-text{color:#9ff0c3}.danger-text{color:#ffb5c4}@media(max-width:600px){.calculator-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="background-elements"><span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span><span class="star star-1">✦</span><span class="star star-2">✧</span><span class="star star-3">✦</span><span class="star star-4">·</span><span class="star star-5">·</span></div>
+<main class="dashboard-container">
+<header class="dashboard-header"><div><h1>📚 AttendWise</h1><p>Attendance calculator ✨</p></div><a href="{{ url_for('dashboard') }}" class="logout-btn">Dashboard</a></header>
+<nav class="main-nav"><a href="{{ url_for('dashboard') }}">🏠 Dashboard</a><a href="{{ url_for('subjects') }}">📚 Subjects</a><a href="{{ url_for('timetable') }}">🗓️ Timetable</a><a href="{{ url_for('attendance') }}">✅ Attendance</a><a href="{{ url_for('history') }}">📊 History</a><a href="{{ url_for('holidays') }}">🌴 Holidays</a></nav>
+<section class="section-card"><div class="section-title-row"><h2>🎯 Can I Skip?</h2></div><p>Calculate how many classes you can miss while staying at or above your target attendance.</p>
+<div class="calculator-grid"><div class="calculator-box"><h3>Present</h3><div class="calculator-number">{{ present }}</div></div><div class="calculator-box"><h3>Absent</h3><div class="calculator-number">{{ absent }}</div></div><div class="calculator-box"><h3>Current Attendance</h3><div class="calculator-number">{{ current_percentage }}%</div></div></div>
+<form method="POST" class="calculator-form"><label>Target attendance (%)<input type="number" name="target" value="{{ target }}" min="1" max="100" step="0.1" required></label><button type="submit" class="dashboard-action">Calculate</button></form>
+<div class="calculator-result"><h3>📚 Can I skip my next class?</h3>{% if can_skip_next %}<p class="success-text">✅ Yes! You can skip the next class and remain at or above {{ target }}%.</p>{% else %}<p class="danger-text">❌ No. Skipping the next class would take you below {{ target }}%.</p>{% endif %}</div>
+<div class="calculator-result"><h3>🔢 Maximum classes you can skip</h3><div class="calculator-number">{{ max_skips }}</div><p>while maintaining at least {{ target }}% attendance.</p></div>
+<div class="calculator-result"><h3>📈 Classes needed to reach target</h3>{% if classes_needed is none %}<p class="danger-text">Reaching 100% is impossible after an absence.</p>{% elif classes_needed == 0 %}<p class="success-text">🎉 You are already at or above your target!</p>{% else %}<div class="calculator-number">{{ classes_needed }}</div><p>classes need to be attended.</p>{% endif %}</div>
+<div class="calculator-result"><strong>ℹ️ Formula</strong><p>Attendance = Present ÷ (Present + Absent) × 100. Cancelled classes and holidays are not counted.</p></div>
+</section></main></body></html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AttendWise - Subjects</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+
+<body>
+
+    <!-- Background -->
+    <div class="background-elements">
+
+        <span class="orb orb-1"></span>
+        <span class="orb orb-2"></span>
+        <span class="orb orb-3"></span>
+
+        <span class="star star-1">✦</span>
+        <span class="star star-2">✧</span>
+        <span class="star star-3">✦</span>
+        <span class="star star-4">·</span>
+        <span class="star star-5">·</span>
+
+    </div>
+
+
+    <div class="dashboard-container">
+
+
+        <!-- Header -->
+
+        <div class="dashboard-header">
+
+            <div>
+
+                <h1>📚 My Subjects</h1>
+
+                <p>
+                    Manage the subjects you attend this semester.
+                </p>
+
+            </div>
+
+
+            <a href="{{ url_for('dashboard') }}"
+               class="logout-btn">
+
+                ← Dashboard
+
+            </a>
+
+        </div>
+
+
+        <!-- Add Subject -->
+
+        <div class="section-card">
+
+            <h2>➕ Add a subject</h2>
+
+            <form method="POST"
+                  action="{{ url_for('subjects') }}"
+                  class="subject-form">
+
+                <input
+                    type="text"
+                    name="subject_name"
+                    placeholder="e.g. Data Structures"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    class="primary-btn subject-add-btn">
+
+                    Add Subject
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- Flash messages -->
+
+        {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                <div class="flash-message">
+
+                    {% for message in messages %}
+
+                        {{ message }}
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- Subject list -->
+
+        <div class="section-card">
+
+            <h2>📖 Your subjects</h2>
+
+
+            {% if subjects %}
+
+                <div class="subject-list">
+
+                    {% for subject in subjects %}
+
+                        <div class="subject-item">
+
+                            <div>
+
+                                <span class="subject-icon">
+                                    📘
+                                </span>
+
+                                <span class="subject-name">
+                                    {{ subject["name"] }}
+                                </span>
+
+                            </div>
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'delete_subject',
+                                    subject_id=subject['id']
+                                ) }}"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                    onclick="return confirm('Delete this subject?')"
+                                >
+
+                                    Delete
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        📚
+                    </div>
+
+                    <h3>No subjects yet</h3>
+
+                    <p>
+                        Add your first subject above to get started.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+    </div>
+
+</body>
+
+</html>

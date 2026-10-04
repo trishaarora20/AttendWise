@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AttendWise - Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+
+<body>
+
+    <!-- Background -->
+    <div class="background-elements">
+
+        <span class="orb orb-1"></span>
+        <span class="orb orb-2"></span>
+        <span class="orb orb-3"></span>
+
+        <span class="star star-1">✦</span>
+        <span class="star star-2">✧</span>
+        <span class="star star-3">✦</span>
+        <span class="star star-4">·</span>
+        <span class="star star-5">·</span>
+
+    </div>
+
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-container">
+
+
+        <!-- HEADER -->
+        <header class="dashboard-header">
+
+            <div>
+
+                <h1>📚 AttendWise</h1>
+
+                <p>
+                    Welcome back, {{ user.name }} ✨
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="logout-btn">
+
+                Logout
+
+            </a>
+
+        </header>
+
+
+        <!-- NAVIGATION -->
+        <nav class="main-nav">
+
+            <a href="{{ url_for('dashboard') }}">
+                🏠 Dashboard
+            </a>
+
+            <a href="{{ url_for('subjects') }}">
+                📚 Subjects
+            </a>
+
+            <a href="{{ url_for('timetable') }}">
+                🗓️ Timetable
+            </a>
+
+            <a href="{{ url_for('attendance') }}">
+                ✅ Attendance
+            </a>
+
+            <a href="{{ url_for('history') }}">
+                📊 History
+            </a>
+
+            <a href="{{ url_for('holidays') }}">
+                🌴 Holidays
+            </a>
+
+        </nav>
+
+
+        <!-- WELCOME -->
+        <section class="welcome-card">
+
+            <h2>
+                Hello, {{ user.name }} 👋
+            </h2>
+
+            <p>
+                Let's keep your college attendance on track.
+            </p>
+
+        </section>
+
+
+        <!-- STAT CARDS -->
+        <section class="stats-grid">
+
+
+            <!-- Overall Attendance -->
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📊
+                </div>
+
+                <h3>
+                    Overall Attendance
+                </h3>
+
+                <strong>
+                    {{ overall_attendance|default(0) }}%
+                </strong>
+
+                <p>
+                    Present classes compared to total attended classes
+                </p>
+
+            </div>
+
+
+            <!-- Subjects -->
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📚
+                </div>
+
+                <h3>
+                    Subjects
+                </h3>
+
+                <strong>
+                    {{ subjects|length }}
+                </strong>
+
+                <p>
+                    Subjects added to AttendWise
+                </p>
+
+            </div>
+
+
+            <!-- Today's Classes -->
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🗓️
+                </div>
+
+                <h3>
+                    Today's Classes
+                </h3>
+
+                <strong>
+                    {{ today_classes|length }}
+                </strong>
+
+                <p>
+                    Classes scheduled for today
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- SUBJECTS -->
+        <section class="section-card">
+
+            <div class="section-title-row">
+
+                <h2>
+                    📚 Your Subjects
+                </h2>
+
+                <a
+                    href="{{ url_for('subjects') }}"
+                    class="small-link">
+
+                    Manage subjects →
+
+                </a>
+
+            </div>
+
+
+            {% if subjects %}
+
+                <div class="subject-mini-grid">
+
+                    {% for subject in subjects %}
+
+                        <div class="subject-mini">
+
+                            <span class="subject-icon">
+                                📖
+                            </span>
+
+                            <span>
+                                {{ subject["name"] }}
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        📚
+                    </div>
+
+                    <h3>
+                        No subjects yet
+                    </h3>
+
+                    <p>
+                        Add your college subjects to start tracking attendance.
+                    </p>
+
+                    <a
+                        href="{{ url_for('subjects') }}"
+                        class="dashboard-action">
+
+                        + Add your first subject
+
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- TODAY'S CLASSES -->
+        <section class="section-card">
+
+            <div class="section-title-row">
+
+                <h2>
+                    🗓️ Today's Classes
+                </h2>
+
+                <a
+                    href="{{ url_for('timetable') }}"
+                    class="small-link">
+
+                    View timetable →
+
+                </a>
+
+            </div>
+
+
+            {% if today_classes %}
+
+                <div class="today-class-list">
+
+                    {% for class_item in today_classes %}
+
+                        <div class="today-class">
+
+                            <div>
+
+                                <strong>
+                                    {{ class_item["subject_name"] }}
+                                </strong>
+
+                                <span>
+                                    🕐 {{ class_item["class_time"] }}
+                                </span>
+
+                            </div>
+
+                            <span class="status pending">
+                                Scheduled
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        ☕
+                    </div>
+
+                    <h3>
+                        No classes scheduled
+                    </h3>
+
+                    <p>
+                        Your timetable is clear for today.
+                    </p>
+
+                    <a
+                        href="{{ url_for('timetable') }}"
+                        class="dashboard-action">
+
+                        + Add timetable
+
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- QUICK ACTIONS -->
+        <section class="section-card">
+
+            <div class="section-title-row">
+
+                <h2>
+                    ⚡ Quick Actions
+                </h2>
+
+            </div>
+
+
+            <div class="action-grid">
+
+                <a
+                    href="{{ url_for('subjects') }}"
+                    class="action-btn">
+
+                    📚
+
+                    <span>
+                        Add Subject
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('timetable') }}"
+                    class="action-btn">
+
+                    🗓️
+
+                    <span>
+                        Timetable
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('attendance') }}"
+                    class="action-btn">
+
+                    ✅
+
+                    <span>
+                        Mark Attendance
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('history') }}"
+                    class="action-btn">
+
+                    📊
+
+                    <span>
+                        View History
+                    </span>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER MESSAGE -->
+        <section class="section-card">
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ✨
+                </div>
+
+                <h3>
+                    Stay consistent!
+                </h3>
+
+                <p>
+                    AttendWise will help you keep track of your
+                    classes, attendance, holidays and progress.
+                </p>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</body>
+
+</html>

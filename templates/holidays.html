@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AttendWise - Holidays</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="background-elements">
+
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+
+</div>
+
+
+<div class="dashboard-container">
+
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <h1>🌴 Holidays</h1>
+
+            <p>
+                Manage college holidays and days off.
+            </p>
+
+        </div>
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="logout-btn"
+        >
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    <div class="main-nav">
+
+        <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
+        <a href="{{ url_for('subjects') }}">📚 Subjects</a>
+        <a href="{{ url_for('timetable') }}">🗓️ Timetable</a>
+        <a href="{{ url_for('attendance') }}">✅ Attendance</a>
+        <a href="{{ url_for('history') }}">📊 History</a>
+        <a href="{{ url_for('holidays') }}">🌴 Holidays</a>
+
+    </div>
+
+
+    <div class="section-card">
+
+        <h2>
+            ➕ Add holiday
+        </h2>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('holidays') }}"
+            class="holiday-form"
+        >
+
+            <input
+                type="date"
+                name="holiday_date"
+                required
+            >
+
+
+            <input
+                type="text"
+                name="holiday_name"
+                placeholder="Holiday name"
+                required
+            >
+
+
+            <button
+                type="submit"
+                class="primary-btn"
+            >
+                Add holiday
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <div class="section-card">
+
+        <h2>
+            🎉 Your holidays
+        </h2>
+
+
+        {% if holidays %}
+
+            <div class="holiday-list">
+
+                {% for holiday in holidays %}
+
+                    <div class="holiday-item">
+
+                        <div>
+
+                            <strong>
+                                {{ holiday["name"] }}
+                            </strong>
+
+                            <span>
+                                {{ holiday["holiday_date"] }}
+                            </span>
+
+                        </div>
+
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'delete_holiday',
+                                holiday_id=holiday['id']
+                            ) }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="delete-btn"
+                            >
+                                Remove
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🌴
+                </div>
+
+                <h3>
+                    No custom holidays
+                </h3>
+
+                <p>
+                    Sundays are automatically treated as holidays.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+</div>
+
+</body>
+
+</html><!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AttendWise - Holidays</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="background-elements">
+
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+
+</div>
+
+
+<div class="dashboard-container">
+
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <h1>🌴 Holidays</h1>
+
+            <p>
+                Manage college holidays and days off.
+            </p>
+
+        </div>
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="logout-btn"
+        >
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    <div class="main-nav">
+
+        <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
+        <a href="{{ url_for('subjects') }}">📚 Subjects</a>
+        <a href="{{ url_for('timetable') }}">🗓️ Timetable</a>
+        <a href="{{ url_for('attendance') }}">✅ Attendance</a>
+        <a href="{{ url_for('history') }}">📊 History</a>
+        <a href="{{ url_for('holidays') }}">🌴 Holidays</a>
+
+    </div>
+
+
+    <div class="section-card">
+
+        <h2>
+            ➕ Add holiday
+        </h2>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('holidays') }}"
+            class="holiday-form"
+        >
+
+            <input
+                type="date"
+                name="holiday_date"
+                required
+            >
+
+
+            <input
+                type="text"
+                name="holiday_name"
+                placeholder="Holiday name"
+                required
+            >
+
+
+            <button
+                type="submit"
+                class="primary-btn"
+            >
+                Add holiday
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <div class="section-card">
+
+        <h2>
+            🎉 Your holidays
+        </h2>
+
+
+        {% if holidays %}
+
+            <div class="holiday-list">
+
+                {% for holiday in holidays %}
+
+                    <div class="holiday-item">
+
+                        <div>
+
+                            <strong>
+                                {{ holiday["name"] }}
+                            </strong>
+
+                            <span>
+                                {{ holiday["holiday_date"] }}
+                            </span>
+
+                        </div>
+
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'delete_holiday',
+                                holiday_id=holiday['id']
+                            ) }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="delete-btn"
+                            >
+                                Remove
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🌴
+                </div>
+
+                <h3>
+                    No custom holidays
+                </h3>
+
+                <p>
+                    Sundays are automatically treated as holidays.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+</div>
+
+</body>
+
+</html>
